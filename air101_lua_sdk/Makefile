@@ -1,5 +1,4 @@
 #for firmware download
-#wm_tool -c $(COM_PORT) -rs rts -ds 2000000 -dl AIR101.fls
 
 DIR      ?= app/led
 COM_PORT ?= ttyUSB0
@@ -16,6 +15,8 @@ LFS_SIZE ?= 50
 
 .PHONY: download
 
+.PHONY: firmware
+
 .PHONY: monitor
 
 
@@ -25,6 +26,7 @@ run: $(LUA_BC)
 	$(WM_TOOL) -b  script.bin -it 1 -fc 0 -ih 20008000  -ra 81E0000 -ua 0 -nh 0  -un 0 -o script
 	rm script.bin
 	$(WM_TOOL) -c $(COM_PORT) -rs rts -ds 2000000 -dl script.img -ua 81E0000
+	$(WM_TOOL) -c $(COM_PORT) -rs rts -sl str -ws 921600
 
 download:
 	$(WM_TOOL) -c $(COM_PORT) -rs rts -ds 2000000 -dl script.img -ua 81E0000
@@ -35,6 +37,9 @@ monitor:
 %.luac: %.lua
 	$(LUAC) $(LUA_DEBUG) -o $@  $<
 	mv $@ ./tools/disk
+
+firmware:
+	$(WM_TOOL) -c $(COM_PORT) -rs rts -ds 2000000 -dl firmware/AIR101.fls
 
 
 .PHONY: clean
